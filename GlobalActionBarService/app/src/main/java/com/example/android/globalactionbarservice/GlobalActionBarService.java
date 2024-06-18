@@ -98,7 +98,28 @@ public class GlobalActionBarService extends AccessibilityService {
                 runAfterDelay(()->{
                     AccessibilityNodeInfoCompat rootInActiveWindow = AccessibilityNodeInfoCompat.wrap(getRootInActiveWindow());
 
-                   
+                    if (rootInActiveWindow == null) {
+                        return;
+                    }
+                    LinkedList<AccessibilityNodeInfoCompat> queue = new LinkedList<>();
+                    queue.add(rootInActiveWindow);
+
+                    while (!queue.isEmpty()) {
+                        AccessibilityNodeInfoCompat node = queue.poll();
+
+                        if (node == null) {
+                            continue;
+                        }
+                        if (node.toString().contains("Shutter;")) {
+                            node.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
+                        }
+                        for (int i = 0; i < node.getChildCount(); i++) {
+                            AccessibilityNodeInfoCompat childNode = node.getChild(i);
+                            if (childNode != null) {
+                                queue.add(childNode);
+                            }
+                        }
+                    }
                 },2000);
 
             }
@@ -116,39 +137,7 @@ public class GlobalActionBarService extends AccessibilityService {
             }
         }, delayMillis);
     }
-    private String traverseAccessibilityTree() {
-        AccessibilityNodeInfoCompat rootInActiveWindow = AccessibilityNodeInfoCompat.wrap(getRootInActiveWindow());
 
-        if (rootInActiveWindow == null) {
-            return "";
-        }
-
-        StringBuilder ret = new StringBuilder();
-
-        LinkedList<Pair<AccessibilityNodeInfoCompat, Integer>> queue = new LinkedList<>();
-        queue.add(new Pair<>(rootInActiveWindow, 0));
-
-        int counter=0;
-        while (!queue.isEmpty()) {
-            counter++;
-            Pair<AccessibilityNodeInfoCompat, Integer> nodePair = queue.poll();
-            if(nodePair==null||nodePair.second==null)continue;
-
-            AccessibilityNodeInfoCompat node = nodePair.first;
-            int depth = nodePair.second;
-            ret.append(node.toString()).append(",").append(counter).append("\n");
-            // Process children
-            if (node.getChildCount() > 0) {
-                for (int i = 0; i < node.getChildCount(); i++) {
-                    AccessibilityNodeInfoCompat childNode = node.getChild(i);
-                    if (childNode != null) {
-                        queue.add(new Pair<>(childNode, depth + 1));
-                    }
-                }
-            }
-        }
-        return ret.toString();
-    }
 
 
     private boolean hasRecordPermission() {
