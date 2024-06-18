@@ -8,7 +8,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -17,6 +19,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ai.picovoice.porcupine.Porcupine;
 import ai.picovoice.porcupine.PorcupineException;
@@ -26,7 +33,7 @@ import ai.picovoice.porcupine.PorcupineManagerCallback;
 
 public class GlobalActionBarService extends AccessibilityService {
     FrameLayout mLayout;
-    private String accessKey = "/DFR6s3XsMSEfVgw+cIBt5BS19yIW+QgdAAQncG16L0IJWePNjLQUg==";
+    private String accessKey = "/Sd213R6s3XsMSEfVgwcIDsd2AMyKXLQgdAAQLMLG16L0IJWePNjLQUg==";
     private PorcupineManager engineManager;
 
 
@@ -84,15 +91,64 @@ public class GlobalActionBarService extends AccessibilityService {
         @Override
         public void invoke(int keywordIndex) {
             if (keywordIndex == 0) {
-
                 Log.i("WakeWord", "Scan Front Detected");
-            } else if (keywordIndex == 1) {
+                Intent Intent3=new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                Intent3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent3);
+                runAfterDelay(()->{
+                    AccessibilityNodeInfoCompat rootInActiveWindow = AccessibilityNodeInfoCompat.wrap(getRootInActiveWindow());
 
-                Log.i("WakeWord", "Bumblebee detected");
+                   
+                },2000);
+
             }
         }
     };
+    public static void runAfterDelay(Runnable task, long delayMillis) {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // Execute the task
+                task.run();
+                // Cancel the timer after executing the task
+                timer.cancel();
+            }
+        }, delayMillis);
+    }
+    private String traverseAccessibilityTree() {
+        AccessibilityNodeInfoCompat rootInActiveWindow = AccessibilityNodeInfoCompat.wrap(getRootInActiveWindow());
 
+        if (rootInActiveWindow == null) {
+            return "";
+        }
+
+        StringBuilder ret = new StringBuilder();
+
+        LinkedList<Pair<AccessibilityNodeInfoCompat, Integer>> queue = new LinkedList<>();
+        queue.add(new Pair<>(rootInActiveWindow, 0));
+
+        int counter=0;
+        while (!queue.isEmpty()) {
+            counter++;
+            Pair<AccessibilityNodeInfoCompat, Integer> nodePair = queue.poll();
+            if(nodePair==null||nodePair.second==null)continue;
+
+            AccessibilityNodeInfoCompat node = nodePair.first;
+            int depth = nodePair.second;
+            ret.append(node.toString()).append(",").append(counter).append("\n");
+            // Process children
+            if (node.getChildCount() > 0) {
+                for (int i = 0; i < node.getChildCount(); i++) {
+                    AccessibilityNodeInfoCompat childNode = node.getChild(i);
+                    if (childNode != null) {
+                        queue.add(new Pair<>(childNode, depth + 1));
+                    }
+                }
+            }
+        }
+        return ret.toString();
+    }
 
 
     private boolean hasRecordPermission() {
