@@ -16,8 +16,17 @@ import android.widget.FrameLayout;
 
 import androidx.core.app.ActivityCompat;
 
+import ai.picovoice.porcupine.Porcupine;
+import ai.picovoice.porcupine.PorcupineException;
+import ai.picovoice.porcupine.PorcupineManager;
+
+import ai.picovoice.porcupine.PorcupineManagerCallback;
+
 public class GlobalActionBarService extends AccessibilityService {
     FrameLayout mLayout;
+    private String accessKey = "G1WLZ+U9c7mAOjAtXUJq8wEMa5SsZ1L+Ti7C4y/MKz1cIHbZIYoM2A==";
+    private PorcupineManager engineManager;
+
 
     @Override
     protected void onServiceConnected() {
@@ -44,7 +53,47 @@ public class GlobalActionBarService extends AccessibilityService {
             startActivity(intent);
         }
         Log.i("onServiceConnected", String.valueOf(hasRecordPermission()));
+
+        PorcupineManagerCallback wakeWordcallback = new PorcupineManagerCallback() {
+            @Override
+            public void invoke(int keywordIndex) {
+                if (keywordIndex == 0) {
+                    // porcupine detected
+                } else if (keywordIndex == 1) {
+                    // bumblebee detected
+                }
+            }
+        };
+
+        try {
+            engineManager = new PorcupineManager.Builder()
+                    .setAccessKey(accessKey) // Replace with your access key
+                    .setKeywords(new Porcupine.BuiltInKeyword[]{Porcupine.BuiltInKeyword.PORCUPINE, Porcupine.BuiltInKeyword.BUMBLEBEE})
+                    .build(this, wakeWordCallback);
+        } catch (PorcupineException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Log.i("engine","Starting now");
+            engineManager.start();
+        } catch (PorcupineException e) {
+            throw new RuntimeException(e);
+        }
+
     }
+    private final PorcupineManagerCallback wakeWordCallback = new PorcupineManagerCallback() {
+        @Override
+        public void invoke(int keywordIndex) {
+            if (keywordIndex == 0) {
+                // Porcupine detected
+                Log.i("WakeWord", "Porcupine detected");
+            } else if (keywordIndex == 1) {
+                // Bumblebee detected
+                Log.i("WakeWord", "Bumblebee detected");
+            }
+        }
+    };
+
 
 
     private boolean hasRecordPermission() {

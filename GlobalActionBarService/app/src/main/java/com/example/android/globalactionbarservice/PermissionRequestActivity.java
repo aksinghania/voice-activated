@@ -15,7 +15,6 @@ public class PermissionRequestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Request the permissions
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE);
     }
 
@@ -23,17 +22,17 @@ public class PermissionRequestActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        // Handle the permissions result
+
         if (requestCode == REQUEST_CODE) {
-            // Permission granted or denied
+
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
+
             } else {
-                // Permission denied
+
             }
         }
 
-        // Finish the activity after handling the result
+
         finish();
     }
 }
