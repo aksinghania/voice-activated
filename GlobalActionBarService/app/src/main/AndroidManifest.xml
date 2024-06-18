@@ -18,6 +18,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application>
+        <activity android:name=".PermissionRequestActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <service
                 android:name=".GlobalActionBarService"
                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true">

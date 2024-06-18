@@ -1,27 +1,20 @@
 package com.example.android.globalactionbarservice;
 
+
+
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.GestureDescription;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.media.AudioManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 public class GlobalActionBarService extends AccessibilityService {
     FrameLayout mLayout;
@@ -41,12 +34,18 @@ public class GlobalActionBarService extends AccessibilityService {
         LayoutInflater inflater = LayoutInflater.from(this);
         inflater.inflate(R.layout.action_bar, mLayout);
         wm.addView(mLayout, lp);
-        requestRecordPermission();
+
         Log.i("onserviceconnects",String.valueOf(hasRecordPermission()));
+
+
+        if (!hasRecordPermission()) {
+            Intent intent = new Intent(this, PermissionRequestActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        Log.i("onServiceConnected", String.valueOf(hasRecordPermission()));
     }
-    private void requestRecordPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-    }
+
 
     private boolean hasRecordPermission() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -62,3 +61,5 @@ public class GlobalActionBarService extends AccessibilityService {
 
     }
 }
+
+
