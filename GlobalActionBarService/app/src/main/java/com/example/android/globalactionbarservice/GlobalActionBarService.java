@@ -53,21 +53,11 @@ public class GlobalActionBarService extends AccessibilityService {
             startActivity(intent);
         }
         Log.i("onServiceConnected", String.valueOf(hasRecordPermission()));
-
-        PorcupineManagerCallback wakeWordcallback = new PorcupineManagerCallback() {
-            @Override
-            public void invoke(int keywordIndex) {
-                if (keywordIndex == 0) {
-                    // porcupine detected
-                } else if (keywordIndex == 1) {
-                    // bumblebee detected
-                }
-            }
-        };
+        
 
         try {
             engineManager = new PorcupineManager.Builder()
-                    .setAccessKey(accessKey) // Replace with your access key
+                    .setAccessKey(accessKey)
                     .setKeywords(new Porcupine.BuiltInKeyword[]{Porcupine.BuiltInKeyword.PORCUPINE, Porcupine.BuiltInKeyword.BUMBLEBEE})
                     .build(this, wakeWordCallback);
         } catch (PorcupineException e) {
@@ -85,10 +75,10 @@ public class GlobalActionBarService extends AccessibilityService {
         @Override
         public void invoke(int keywordIndex) {
             if (keywordIndex == 0) {
-                // Porcupine detected
+
                 Log.i("WakeWord", "Porcupine detected");
             } else if (keywordIndex == 1) {
-                // Bumblebee detected
+
                 Log.i("WakeWord", "Bumblebee detected");
             }
         }
