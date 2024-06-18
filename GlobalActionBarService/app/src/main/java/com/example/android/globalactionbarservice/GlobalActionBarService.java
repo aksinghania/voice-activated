@@ -4,6 +4,7 @@ package com.example.android.globalactionbarservice;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
@@ -12,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.core.app.ActivityCompat;
@@ -53,7 +55,8 @@ public class GlobalActionBarService extends AccessibilityService {
             startActivity(intent);
         }
         Log.i("onServiceConnected", String.valueOf(hasRecordPermission()));
-        
+
+
 
         try {
             engineManager = new PorcupineManager.Builder()
@@ -65,11 +68,17 @@ public class GlobalActionBarService extends AccessibilityService {
         }
         try {
             Log.i("engine","Starting now");
+            configureMainButton();
             engineManager.start();
         } catch (PorcupineException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void configureMainButton() {
+        Button swipeButton = (Button) mLayout.findViewById(R.id.main_button);
+        swipeButton.setText("Actively Listening");
     }
     private final PorcupineManagerCallback wakeWordCallback = new PorcupineManagerCallback() {
         @Override
@@ -98,6 +107,13 @@ public class GlobalActionBarService extends AccessibilityService {
     @Override
     public void onInterrupt() {
 
+    }
+    @Override
+    public void onDestroy() {
+        if (engineManager != null) {
+            engineManager.delete(); // Release Porcupine resources
+        }
+        super.onDestroy();
     }
 }
 
