@@ -110,6 +110,11 @@ public class GlobalActionBarService extends AccessibilityService {
     }
     @Override
     public void onDestroy() {
+        try {
+            engineManager.stop();
+        } catch (PorcupineException e) {
+            throw new RuntimeException(e);
+        }
         if (engineManager != null) {
             engineManager.delete(); // Release Porcupine resources
         }
