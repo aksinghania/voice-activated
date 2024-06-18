@@ -26,7 +26,7 @@ import ai.picovoice.porcupine.PorcupineManagerCallback;
 
 public class GlobalActionBarService extends AccessibilityService {
     FrameLayout mLayout;
-    private String accessKey = "G1WLZ+U9c7mAOjAtXUJq8wEMa5SsZ1L+Ti7C4y/MKz1cIHbZIYoM2A==";
+    private String accessKey = "/DFR6s3XsMSEfVgw+cIBt5BS19yIW+QgdAAQncG16L0IJWePNjLQUg==";
     private PorcupineManager engineManager;
 
 
@@ -61,7 +61,7 @@ public class GlobalActionBarService extends AccessibilityService {
         try {
             engineManager = new PorcupineManager.Builder()
                     .setAccessKey(accessKey)
-                    .setKeywords(new Porcupine.BuiltInKeyword[]{Porcupine.BuiltInKeyword.PORCUPINE, Porcupine.BuiltInKeyword.BUMBLEBEE})
+                    .setKeywordPaths(new String[]{"scan-front_en_android_v3_0_0.ppn"})
                     .build(this, wakeWordCallback);
         } catch (PorcupineException e) {
             throw new RuntimeException(e);
@@ -85,7 +85,7 @@ public class GlobalActionBarService extends AccessibilityService {
         public void invoke(int keywordIndex) {
             if (keywordIndex == 0) {
 
-                Log.i("WakeWord", "Porcupine detected");
+                Log.i("WakeWord", "Scan Front Detected");
             } else if (keywordIndex == 1) {
 
                 Log.i("WakeWord", "Bumblebee detected");
